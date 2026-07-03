@@ -1,9 +1,27 @@
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
+import os 
+from pathlib import Path
+
+cwd = Path.cwd()
+dir = cwd.parents[1]
+subdir = ["data", "source_tables", "performance_mean_sd_for_latex.csv"]
+
+csvfile = dir
+
+for i in subdir:
+    csvfile = csvfile.joinpath(i)
+
+
+
+
 
 x = np.linspace(0, 2, 322)
 y = np.sin(x * 2)
+
+
 
 fig, (ax1, ax2) = plt.subplots(1, 2)
 fig.suptitle('Horizontally stacked subplots')
