@@ -1,0 +1,74 @@
+[
+  {
+    "check": "Grade label baseline balanced accuracy mean",
+    "value": 0.517,
+    "expected": 0.517,
+    "tolerance": 0.0005,
+    "ok": true,
+    "note": "From performance_mean_sd_for_latex.csv"
+  },
+  {
+    "check": "Grade label sheaf balanced accuracy mean",
+    "value": 0.6,
+    "expected": 0.6,
+    "tolerance": 0.0005,
+    "ok": true,
+    "note": "From performance_mean_sd_for_latex.csv"
+  },
+  {
+    "check": "Grade 3 log-rank p",
+    "value": 2.551326112744672e-09,
+    "expected": 2.551326e-09,
+    "tolerance": 1e-12,
+    "ok": true,
+    "note": "From iteration2_transition_km_logrank.csv"
+  },
+  {
+    "check": "Grade 3 C-index",
+    "value": 0.7296796889464914,
+    "expected": 0.72968,
+    "tolerance": 1e-06,
+    "ok": true,
+    "note": "From iteration2_transition_km_logrank.csv"
+  },
+  {
+    "check": "Grade 3 Cox HR per SD",
+    "value": 2.5189500666485283,
+    "expected": 2.51895,
+    "tolerance": 1e-05,
+    "ok": true,
+    "note": "From iteration2_transition_adjusted_cox.csv"
+  },
+  {
+    "check": "Grade 3 Cox p-value",
+    "value": 4.3073789330232473e-07,
+    "expected": 4.307379e-07,
+    "tolerance": 1e-12,
+    "ok": true,
+    "note": "From iteration2_transition_adjusted_cox.csv"
+  },
+  {
+    "check": "Number of PLIS driver rows",
+    "value": 11,
+    "expected": 11,
+    "tolerance": 0,
+    "ok": true,
+    "note": "From plis_drivers_fdr_bootstrap.csv"
+  },
+  {
+    "check": "Top PLIS driver delta",
+    "value": 5.430712015632127,
+    "expected": 5.430712015632127,
+    "tolerance": 0,
+    "ok": true,
+    "note": "Top pathway: Cell cycle"
+  },
+  {
+    "check": "Alpha sensitivity rows",
+    "value": 5,
+    "expected": 5,
+    "tolerance": 0,
+    "ok": true,
+    "note": "alpha in {0,0.25,0.5,0.75,1}"
+  }
+]

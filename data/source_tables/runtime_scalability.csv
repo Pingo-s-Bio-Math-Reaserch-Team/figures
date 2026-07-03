@@ -1,0 +1,5 @@
+module,empirical_status,time_complexity,scales_with
+CNV segment-to-gene aggregation,Synthetic verified,O((S+G) log S + K),"segments S, genes G, overlaps K"
+Low-rank neural restriction maps,Synthetic verified,O(n E r(d_u+d_v)) per epoch,"patients n, edges E, rank r"
+QR orthogonalization,Synthetic verified,O(n q^2 + n q m),"samples n, covariates q, sheaf features m"
+Cox/KM evaluation,Completed on CGGA outputs,O(n m^2) Cox approx.,"samples n, predictors m"

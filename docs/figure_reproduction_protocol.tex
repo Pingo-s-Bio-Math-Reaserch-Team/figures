@@ -1,0 +1,105 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{listings}
+\lstset{basicstyle=\ttfamily\small,breaklines=true,frame=single}
+\title{Figure and Result Reproducibility Protocol for the BIBM Sheaf-Glioma Manuscript}
+\author{Prepared for the Sheaf-Theoretic Brain Tumor Quantification Team}
+\date{\today}
+\begin{document}
+\maketitle
+
+\section{Purpose}
+This document specifies exactly how to recreate the figures, diagrams, and manuscript-facing tables for the sheaf-theoretic glioma project. The package is designed for review-readiness: every empirical plot is generated from a bundled CSV source table, while the architecture diagram is deterministic and contains no numerical result claims. The package also includes a validation script that checks the key numerical claims used in the paper against the result tables.
+
+\section{Honesty and provenance rules}
+The following rules should be followed before submitting any figure to an external reviewer or to IEEE BIBM.
+\begin{enumerate}[leftmargin=1.2cm]
+  \item No bar height, p-value, confidence interval, hazard ratio, C-index, AUROC, or balanced accuracy value should be typed manually into a figure.
+  \item Empirical figures must be generated from CSV tables in \texttt{data/source\_tables/} or \texttt{data/final\_competitive\_results/}.
+  \item The command \texttt{python scripts/verify\_results\_from\_tables.py} must pass before figures are used.
+  \item The manuscript should distinguish between figures generated from finalized analysis tables and figures that require the full raw-data pipeline.
+  \item True raw-data-to-figure regeneration requires the separate production pipeline and raw TCGA/CGGA matrices.
+\end{enumerate}
+
+\section{Package structure}
+\begin{lstlisting}
+bibm_figure_reproducibility/
+  README.md
+  requirements.txt
+  data_manifest_sha256.csv
+  data/
+    source_tables/
+    final_competitive_results/
+  scripts/
+    verify_results_from_tables.py
+    reproduce_all_figures.py
+  notebooks/
+    BIBM_Figure_Reproduction_Colab.ipynb
+  figures/
+  manuscript/
+  docs/
+\end{lstlisting}
+
+\section{Local execution}
+Run the following commands from the package root:
+\begin{lstlisting}
+pip install -r requirements.txt
+python scripts/verify_results_from_tables.py
+python scripts/reproduce_all_figures.py
+\end{lstlisting}
+The first command installs plotting and survival-analysis dependencies. The verification command checks key values against the source tables. The figure command recreates every figure and writes \texttt{.pdf} and \texttt{.png} files to \texttt{figures/}.
+
+\section{Google Colab execution}
+Upload the package to Google Drive. Open \texttt{notebooks/BIBM\_Figure\_Reproduction\_Colab.ipynb}, mount Drive, set \texttt{PROJECT\_DIR}, and run all cells. The notebook simply calls the same validation and figure-generation scripts used locally.
+
+\section{Figure provenance map}
+\begin{longtable}{p{0.18\linewidth}p{0.34\linewidth}p{0.38\linewidth}}
+\toprule
+Figure & Source file(s) & What is plotted \\
+\midrule
+Figure 1 & none; deterministic schematic & Multi-omics cellular-sheaf architecture; CNV/methylation/miRNA-WES to RNA to pathway to phenotype; nonlinear restriction maps and QR orthogonalization. \\
+Figure 2 & \texttt{performance\_mean\_sd\_for\_latex.csv} & Mean $\pm$ SD balanced accuracy and AUROC for baseline vs. sheaf models. \\
+Figure 3 & \texttt{iteration2\_patient\_transition\_risk\_scores.csv}, \texttt{iteration2\_transition\_km\_logrank.csv}, \texttt{iteration2\_transition\_adjusted\_cox.csv} & PCA of pathway residual space and Grade 3 Kaplan-Meier survival split by transition-risk median. \\
+Figure 4 & \texttt{plis\_drivers\_fdr\_bootstrap.csv} & Pathway-local PLIS differences with bootstrapped 95\% confidence intervals and FDR significance annotations. \\
+Figure 5 & \texttt{alpha\_sensitivity.csv} & Grade 3 C-index and log-rank sensitivity across transition-index weights $\alpha$. \\
+Figure 6 & \texttt{calibration\_summary\_v3.csv} & Brier score and expected calibration error for baseline and sheaf models. \\
+Figure 7 & \texttt{cplis\_patient\_table.csv}, \texttt{cplis\_grade\_summary.csv} & Concentrated PLIS distribution by grade. \\
+\bottomrule
+\end{longtable}
+
+\section{Key numerical checks}
+The verification script confirms these manuscript-facing claims directly from the source tables:
+\begin{itemize}[leftmargin=1.2cm]
+  \item Grade-label baseline balanced accuracy mean: $0.517$.
+  \item Grade-label sheaf balanced accuracy mean: $0.600$.
+  \item Grade 3 log-rank p-value: $2.551326\times 10^{-9}$.
+  \item Grade 3 Cox hazard ratio per standard deviation: $2.51895$.
+  \item Grade 3 Cox p-value: $4.307379\times 10^{-7}$.
+  \item PLIS driver table contains 11 pathway rows with FDR and bootstrapped confidence intervals.
+  \item Alpha sensitivity table contains five values: $\alpha\in\{0,0.25,0.5,0.75,1\}$.
+\end{itemize}
+
+\section{Raw-data versus figure-table reproducibility}
+This package is a figure-level reproducibility package. It regenerates figures from the finalized tables used in the manuscript. It does not itself download GDC/TCGA data or manually download CGGA data. To regenerate all tables from raw omics matrices, use the separate production package containing the TCGA download script, harmonization modules, neural sheaf modules, and treatment-aware Cox pipeline.
+
+\section{Recommended final workflow before submission}
+\begin{enumerate}[leftmargin=1.2cm]
+  \item Run the raw-data pipeline if raw TCGA/CGGA matrices are available.
+  \item Export final CSVs into the same schema as the tables bundled here.
+  \item Run \texttt{verify\_results\_from\_tables.py}.
+  \item Run \texttt{reproduce\_all\_figures.py}.
+  \item Insert the generated PDF figures into the manuscript.
+  \item Check that all manuscript numbers match source-table values.
+  \item Archive the package with a commit hash or SHA256 manifest.
+\end{enumerate}
+
+\section{BIBM submission note}
+For a BIBM submission, use vector PDF figures whenever possible, keep raster fallback figures at $\geq 600$ dpi, and ensure captions state the cohort, validation protocol, and statistical test used. Kaplan-Meier plots should include a risk table or clearly report the risk-split definition and log-rank p-value. Cox forest plots should report hazard ratios per standard deviation, 95\% confidence intervals, and covariates.
+
+\end{document}

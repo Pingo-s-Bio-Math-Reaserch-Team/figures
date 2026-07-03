@@ -1,0 +1,4 @@
+cohort,n,age_median,age_iqr,grade_2_n,grade_3_n,grade_4_n,idh_mutant_n,events_n,os_median
+TCGA common schema,415,54.0,40.0-65.0,77,98,240,155,312,18.5
+CGGA common schema,432,43.0,35.0-51.0,103,166,163,240,279,29.17214191852825
+CGGA pathway complete-case,417,43.0,35.0-51.0,97,161,159,231,278,29.0407358738502

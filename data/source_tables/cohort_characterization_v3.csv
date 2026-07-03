@@ -1,0 +1,4 @@
+Cohort,Patients,Median age (IQR),Male,Female,Grade2,Grade3,Grade4,IDH_mutant,Codel_1p19q,MGMT_methylated,Events,Median_OS
+TCGA common,415,54.0 (40.0-65.0),242,173,77,98,240,155,55,244,312,18.5
+CGGA common,432,43.0 (35.0-51.0),243,189,103,166,163,240,93,253,279,29.2
+CGGA pathway,417,43.0 (35.0-51.0),232,185,97,161,159,231,88,245,278,29.0

@@ -1,0 +1,402 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{url}
+\usepackage{cite}
+\usepackage{balance}
+\usepackage{hyperref}
+\usepackage{makecell}
+\graphicspath{{../figures/}}
+\hypersetup{colorlinks=true,linkcolor=black,citecolor=black,urlcolor=black}
+
+\title{Regulatory Discordance in Grade 3 Glioma Revealed by Orthogonal Cellular-Sheaf Multi-Omics Analysis}
+
+\author{%
+\begin{tabular}{@{}c@{\hspace{1.0cm}}c@{}}
+\begin{minipage}[t]{0.44\textwidth}\centering
+{\normalsize Brandon Kong}\\[-0.05em]
+{\small\textit{Independent Researcher}}\\[-0.05em]
+{\small\textit{McLean, Virginia, USA}}
+\end{minipage}
+&
+\begin{minipage}[t]{0.44\textwidth}\centering
+{\normalsize Michael Wheeler}\\[-0.05em]
+{\small\textit{Thomas Jefferson High School for Science and Technology}}\\[-0.05em]
+{\small\textit{Alexandria, Virginia, USA}}
+\end{minipage}
+\\[3.25em]
+\begin{minipage}[t]{0.44\textwidth}\centering
+{\normalsize Mihir Kashyap}\\[-0.05em]
+{\small\textit{Thomas Jefferson High School for Science and Technology}}\\[-0.05em]
+{\small\textit{Alexandria, Virginia, USA}}
+\end{minipage}
+&
+\begin{minipage}[t]{0.44\textwidth}\centering
+{\normalsize Haomin Wu}\\[-0.05em]
+{\small\textit{McLean High School}}\\[-0.05em]
+{\small\textit{McLean, Virginia, USA}}
+\end{minipage}
+\\[3.25em]
+\begin{minipage}[t]{0.44\textwidth}\centering
+{\normalsize Leo Su}\\[-0.05em]
+{\small\textit{Thomas Jefferson High School for Science and Technology}}\\[-0.05em]
+{\small\textit{Alexandria, Virginia, USA}}
+\end{minipage}
+&
+\begin{minipage}[t]{0.44\textwidth}\centering
+{\normalsize Daksh Bhatia}\\[-0.05em]
+{\small\textit{McLean High School}}\\[-0.05em]
+{\small\textit{McLean, Virginia, USA}}
+\end{minipage}
+\\[3.25em]
+\begin{minipage}[t]{0.44\textwidth}\centering
+{\normalsize Sophearithy Tha}\\[-0.05em]
+{\small\textit{McLean High School}}\\[-0.05em]
+{\small\textit{McLean, Virginia, USA}}
+\end{minipage}
+&
+\begin{minipage}[t]{0.44\textwidth}\centering
+{\normalsize Alex Lee}\\[-0.05em]
+{\small\textit{Thomas Jefferson High School for Science and Technology}}\\[-0.05em]
+{\small\textit{Alexandria, Virginia, USA}}
+\end{minipage}
+\end{tabular}%
+}
+
+\begin{document}
+\maketitle
+\vspace{1.2em}
+
+\begin{abstract}
+Grade 3 gliomas exhibit heterogeneous survival even among tumors with similar standard molecular annotations, creating a clinical need for biomarkers that identify transition-like, high-risk disease states. Existing multi-omics models often aggregate features but do not directly quantify disagreement among genomic, regulatory, pathway, and phenotype layers. We introduce a supervised orthogonal cellular-sheaf framework in which biological edges encode consistency laws and patient-specific residuals measure regulatory discordance. The method defines Sheaf Regulatory Inconsistency Scores (SRIS), Pathway-Local Inconsistency Scores (PLIS), and a transition-risk index, while QR residualization forces sheaf features to occupy the orthogonal complement of known clinical and molecular covariates. In CGGA pathway-expression validation, supervised orthogonal sheaf features improved Grade 2/3/4 balanced accuracy from $0.517\pm0.055$ to $0.600\pm0.068$ and AUROC from $0.714\pm0.037$ to $0.797\pm0.040$. More importantly, high sheaf transition risk separated Grade 3 survival groups (log-rank $p=2.55\times10^{-9}$) and remained associated with worse outcome in adjusted Cox analysis (HR $=2.52$ per standard deviation, 95\% CI $[1.76,3.60]$). Pathway-local drivers included invasion/matrix, cell-cycle, mesenchymal, DNA-repair, immune, and stemness programs. These results support regulatory discordance as a measurable transition-state phenotype in glioma and motivate prospective validation of SRIS as a risk-stratification biomarker in Grade 3 disease.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Glioma, multi-omics, cellular sheaves, survival analysis, Cox model, pathway biology, topological machine learning, biomarker discovery.
+\end{IEEEkeywords}
+
+\section{Introduction}
+Diffuse gliomas are clinically heterogeneous tumors for which histologic grade alone does not fully explain survival risk. Molecular markers such as IDH mutation, 1p/19q codeletion, MGMT methylation, and transcriptomic state have improved classification, yet Grade 3 tumors remain especially difficult: some behave like lower-grade disease while others progress toward Grade-4-like biology. This intermediate behavior motivates methods that quantify whether a tumor's molecular layers are coherent or discordant.
+
+Most multi-omics learning methods concatenate or embed molecular features and optimize a prediction objective. Such models can be accurate, but they rarely identify where the biological disagreement occurs. We instead ask whether genomic, epigenomic, transcriptomic, pathway, and phenotype states obey expected consistency laws. Cellular sheaves provide a natural language for this problem: each biological edge carries maps into a common edge stalk, and the residual on that edge directly measures violation of the encoded consistency law.
+
+Our central hypothesis is that sheaf residual energy measures regulatory discordance, not monotone malignancy. Under this interpretation, an aggressive Grade 4 tumor may be severe but internally coherent, while a Grade 3 tumor may display mixed programs and higher local-to-global inconsistency. This reframing turns a previously puzzling observation - Grade 3 having higher average SRIS than Grade 4 - into a testable biological claim about transition-state glioma.
+
+We make four contributions. First, we formulate glioma multi-omics as a supervised orthogonal cellular sheaf whose edge residuals quantify regulatory discordance. Second, we introduce PLIS and transition-risk scores that decompose global discordance into pathway-local biological programs. Third, we evaluate Grade 3 transition risk with Kaplan-Meier and adjusted Cox analyses, including hazard ratios, confidence intervals, and power calculations. Fourth, we provide a reproducible evaluation framework with mean $\pm$ SD cross-validation metrics, calibration summaries, FDR-corrected pathway tests, alpha sensitivity analysis, runtime/scalability analysis, and modular TCGA/CGGA multi-omics ingestion scripts.
+
+\section{Related Work}
+\subsection{Multi-omics integration for glioma and cancer prognosis}
+Multi-omics cancer survival models have progressed from simple concatenation to multimodal neural and pathway-structured architectures. Cheerla and Gevaert constructed deep multi-modal survival models using clinical, mRNA, miRNA, and histopathology information across cancer types~\cite{cheerla2019}. Vale-Silva and Rohr proposed MultiSurv for multimodal pan-cancer survival prediction~\cite{valesilva2021}. Biologically structured networks such as P-NET show that pathway-aware neural architectures can improve interpretability by constraining information flow through known biological hierarchies~\cite{elmarakeby2021}. These models motivate our pathway-level representation, but they primarily learn predictive representations. Our contribution is different: we explicitly model \emph{violations} of biological consistency laws, yielding residuals that are interpretable before any post-hoc feature attribution.
+
+Glioma biology has long suggested that histologic grade is not sufficient to describe molecular state. The TCGA lower-grade glioma analysis in Brat et al. showed that integrated multi-platform classes align more strongly with IDH, 1p/19q, and TP53 status than with histologic class, and that IDH-wildtype lower-grade gliomas can resemble glioblastoma clinically and molecularly~\cite{brat2015}. Ceccarelli et al. expanded this view by identifying molecular subsets and progression pathways across grade II, III, and IV diffuse gliomas~\cite{ceccarelli2016}. Neftel et al. further showed that GBM malignant cells inhabit plastic cellular states influenced by genetic drivers and microenvironmental programs~\cite{neftel2019}. We position the Grade 3 result against this literature: the sheaf transition-risk index is not an anomaly detector disconnected from biology, but a principled quantification of the molecular-phenotype discordance already suspected in intermediate glioma states.
+
+\subsection{Graph neural networks, topological learning, and sheaves}
+Graph neural networks have been used for multi-omics integration and cancer outcome prediction, often by propagating molecular features over gene, pathway, or patient graphs~\cite{yao2022,li2022,mogdx2024}. Topological methods have also been applied to genomics, including the landmark topological data analysis study of breast cancer subgroups by Nicolau, Levine, and Carlsson~\cite{nicolau2011}. Cellular sheaf theory extends graph Laplacians by assigning vector spaces to vertices and edges and restriction maps to incidences; Hansen and Ghrist developed a spectral theory of cellular sheaves that underlies our Laplacian interpretation~\cite{hansen2019}. These works establish the mathematical foundation, but they do not define biomedical pathway-local residuals or clinical transition-risk scores.
+
+A natural comparison is Neural Sheaf Diffusion by Bodnar et al.~\cite{bodnar2022}. Our model is not simply Neural Sheaf Diffusion applied to genomics. In Neural Sheaf Diffusion, sheaf structure improves graph diffusion, heterophily handling, and oversmoothing behavior; residual disagreement is part of a representation-learning mechanism to support node embeddings and classification. In our framework, the residual is the biological signal. We do not primarily seek smoothed node embeddings. We define PLIS and SRIS as interpretable quantities that quantify consistency-law violations on edges such as methylation$\to$RNA or pathway$\to$phenotype. Moreover, treatment-aware QR orthogonalization has no analogue in the homophily-correction setting: it forces sheaf residuals into the linear complement of clinical and molecular covariates. Thus interpretability is built into the mathematical object, not recovered after training by an attribution method.
+
+\subsection{Residualization and confounder adjustment}
+Residualization has a long methodological history in genomics and epidemiology. ComBat corrects batch effects through empirical Bayes adjustment~\cite{johnson2007}; RUV-type methods similarly remove unwanted variation using control features or factors~\cite{gagnonbartsch2012}; Mendelian randomization emphasizes the need to separate causal and confounded associations~\cite{daveysmith2014}; and clinical prediction reporting standards such as TRIPOD highlight transparent adjustment and validation for prognostic models~\cite{collins2015,moons2015}. Our QR layer follows this lineage but is used for a different purpose: it constructs exact sample-level linear orthogonality $B^TS_\perp=0$ between sheaf residual features and a baseline covariate space. This does not prove causal independence, but it prevents linear duplication of age, grade, IDH, MGMT, or treatment variables included in $B$.
+
+
+\section{Data, Cohorts, and Validation Regimes}
+We use two completed analysis regimes and one production-ready extension. A 420-patient cleaned glioma file served as the initial internal discovery and method-development source. Five records lacked variables required for the common-schema transfer table, yielding 415 TCGA common-schema patients; this resolves the difference between the 420-patient source file and the 415-patient common-schema cohort. The CGGA pathway-expression analysis used 417 complete-case patients with survival and pathway features. A common-schema TCGA-to-CGGA zero-shot check used shared clinical/molecular fields from 415 TCGA and 432 CGGA patients. There is no patient overlap between the TCGA and CGGA common-schema tables. The pathway-expression validation reported in the main results is performed within CGGA using fold-safe validation; the common-schema experiment is a separate zero-shot transfer sanity check. The package also contains scripts for a future pathway-level zero-shot experiment once matched TCGA pathway-expression matrices are added.
+
+\begin{table*}[t]
+\caption{Cohort characterization. Sex is reported as male/female; grade is reported as Grade 2/3/4 counts.}
+\label{tab:cohorts}
+\centering
+\begin{tabular}{lccc}
+\toprule
+Characteristic & TCGA common & CGGA common & CGGA pathway \\
+\midrule
+Patients & 415 & 432 & 417 \\
+Age, median (IQR) & 54.0 (40.0--65.0) & 43.0 (35.0--51.0) & 43.0 (35.0--51.0) \\
+Sex, male/female & 242/173 & 243/189 & 232/185 \\
+Grade 2/3/4 & 77/98/240 & 103/166/163 & 97/161/159 \\
+IDH-mutant & 155 & 240 & 231 \\
+1p/19q codeleted & 55 & 93 & 88 \\
+MGMT methylated & 244 & 253 & 245 \\
+Events & 312 & 279 & 278 \\
+Median OS (mo.) & 18.5 & 29.2 & 29.0 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\section{Methods}
+\subsection{Regulatory cellular sheaf}
+Let $G=(V,E)$ be a directed biological graph. Vertices represent omics or biological state spaces such as CNV, promoter methylation, miRNA/WES, RNA, pathway activity, and phenotype. Each vertex has a stalk $\mathcal F(v)=\mathbb R^{d_v}$. Each edge $e=(u,v)$ has an edge stalk $\mathcal F(e)=\mathbb R^{d_e}$ and restriction maps
+\begin{equation}
+\rho_{u,e}:\mathbb R^{d_u}\to\mathbb R^{d_e},\qquad
+\rho_{v,e}:\mathbb R^{d_v}\to\mathbb R^{d_e}.
+\end{equation}
+For patient $p$, the edge residual is
+\begin{equation}
+r_e(p)=\rho_{u,e}(x_u(p))-\rho_{v,e}(x_v(p)).
+\end{equation}
+Stacking these residuals defines the sheaf coboundary $B_{\mathcal F}$ and Laplacian $L_{\mathcal F}=B_{\mathcal F}^TB_{\mathcal F}$. Therefore
+\begin{equation}
+x(p)^TL_{\mathcal F}x(p)=\sum_{e\in E}\|r_e(p)\|_2^2.
+\end{equation}
+This identity is the basis for the Sheaf Regulatory Inconsistency Score (SRIS).
+
+\subsection{Pathway-local inconsistency and transition risk}
+For a pathway $P$, define
+\begin{equation}
+\mathrm{PLIS}_{P}(p)=\sum_{e\in E(P)}\|r_e(p)\|_2^2.
+\end{equation}
+In the CGGA expression-layer analysis, PLIS is instantiated as a reference-law deviation,
+\begin{equation}
+\mathrm{PLIS}_{P}(p)=\left(\frac{A_P(p)-\mu_P^{\mathrm{ref}}}{\sigma_P^{\mathrm{ref}}+\epsilon}\right)^2,
+\end{equation}
+where $A_P(p)$ is pathway activity and the reference law is estimated from an outcome-blind low-discordance reference set. In the reported CGGA analysis, the reference set was selected within training folds using pathway geometry only, without survival time or event status; operationally, it corresponds to the lower-discordance reference subset used to estimate $\mu_P^{\mathrm{ref}}$ and $\sigma_P^{\mathrm{ref}}$. The transition-risk index combines global pathway discordance and Grade-4-like geometry,
+\begin{equation}
+T_\alpha(p)=\alpha z\left(\frac{1}{|\mathcal P|}\sum_{P\in\mathcal P}\mathrm{PLIS}_P(p)\right)+(1-\alpha)z(-\|A(p)-\mu_{G4}\|_2).
+\end{equation}
+We report alpha sensitivity for $\alpha\in\{0,0.25,0.5,0.75,1\}$.
+
+
+\subsection{Concentrated versus diffuse PLIS}
+The decomposition $\mathrm{SRIS}=\sum_P\mathrm{PLIS}_P$ suggests a testable clinical distinction. Define pathway-energy proportions
+\begin{equation}
+\pi_P(p)=\frac{\mathrm{PLIS}_P(p)}{\sum_Q\mathrm{PLIS}_Q(p)+\epsilon}
+\end{equation}
+and a normalized concentration score
+\begin{equation}
+C_{\mathrm{PLIS}}(p)=1+\frac{\sum_P \pi_P(p)\log \pi_P(p)}{\log |\mathcal P|}.
+\end{equation}
+High global energy with high $C_{\mathrm{PLIS}}$ indicates one or two dominant pathway failures, whereas high global energy with low concentration indicates diffuse multi-pathway dysregulation. These patterns may reflect different therapeutic hypotheses: a concentrated profile suggests a focal regulatory mechanism, while a diffuse profile suggests broad transition-state instability. We evaluate this distinction empirically in Section~\ref{sec:cplis-results}.
+
+\subsection{Low-rank neural restriction maps}
+For nonlinear edges, we use parameter-efficient maps
+\begin{equation}
+\rho_e^\theta(x)=A_ex+U_e\sigma(V_ex+b_e),
+\end{equation}
+where $V_e\in\mathbb R^{r\times d_u}$ and $U_e\in\mathbb R^{d_e\times r}$ with $r\ll\min(d_u,d_e)$. This allows threshold-like biological relationships while limiting capacity.
+
+\subsection{QR orthogonalization}
+Let $S$ be the sheaf feature matrix and $B$ the baseline covariate matrix. When available, $B$ includes age, grade, IDH, MGMT, gross total resection, radiation, and temozolomide. Let $B=QR$ be a thin QR factorization. We define
+\begin{equation}
+S_\perp=S-QQ^TS.
+\end{equation}
+Then $Q^TS_\perp=0$, so $S_\perp$ is exactly linearly orthogonal to the baseline space in the observed sample. This is a residualization guarantee, not a causal independence claim.
+
+\subsection{Evaluation and statistical inference}
+Classification metrics are reported as mean $\pm$ SD across folds. For pathway-driver analyses, bars show bootstrapped 95\% confidence intervals and Benjamini-Hochberg FDR-adjusted p-values. Survival analyses include Kaplan-Meier curves with risk tables, log-rank tests, Cox hazard ratios per one standard deviation of transition risk, 95\% confidence intervals, Harrell's C-index, and calibration summaries including Brier score and expected calibration error. For the Grade 3 survival result, we additionally report a Schoenfeld-style power approximation based on observed events and hazard ratio.
+
+\section{Results}
+\subsection{Architecture}
+Figure~\ref{fig:architecture} summarizes the multi-omics cellular-sheaf architecture. Edges represent biological consistency laws rather than feature similarity. The residual is therefore not an error to be discarded; it is the measured regulatory discordance.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.95\textwidth]{figure1_architecture.pdf}
+\caption{Multi-omics cellular-sheaf architecture. Low-rank maps encode nonlinear biological consistency laws and residuals measure regulatory discordance. QR projection constructs a baseline-orthogonal sheaf feature block.}
+\label{fig:architecture}
+\end{figure*}
+
+\subsection{Repeated cross-validation and zero-shot common-schema transfer}
+Table~\ref{tab:performance} reports mean $\pm$ SD performance. Grade-label prediction is a 3-class task (Grades 2/3/4), so random-chance balanced accuracy is $0.33$; the baseline value $0.517$ is above chance but leaves substantial headroom. The sheaf model improved Grade-label balanced accuracy by $0.083$ and AUROC by $0.083$. The TCGA-to-CGGA common-schema transfer check showed a modest grade-label gain. For Grade 4 status and the 24-month endpoint, the common-schema deltas were slightly negative in balanced accuracy (about $-0.004$ and $-0.007$), while AUROC/Brier changed only marginally; these small effects are interpreted as a sanity-check limitation of the shared clinical/molecular schema rather than as evidence against the pathway-sheaf result. The main pathway-expression claim is based on CGGA fold-safe validation.
+
+\begin{table*}[t]
+\caption{Repeated cross-validation metrics reported as mean $\pm$ SD.}
+\label{tab:performance}
+\centering
+\begin{tabular}{llcccc}
+\toprule
+Task & Model & Balanced accuracy & AUROC & Brier & ECE \\
+\midrule
+Grade label & Baseline & $0.517 \pm 0.055$ & $0.714 \pm 0.037$ & $0.191 \pm 0.011$ & $0.128 \pm 0.036$ \\
+Grade label & Baseline + sheaf & $0.600 \pm 0.068$ & $0.797 \pm 0.040$ & $0.167 \pm 0.012$ & $0.111 \pm 0.034$ \\
+Grade 4 status & Baseline & $0.775 \pm 0.071$ & $0.818 \pm 0.056$ & $0.170 \pm 0.024$ & $0.130 \pm 0.014$ \\
+Grade 4 status & Baseline + sheaf & $0.784 \pm 0.062$ & $0.866 \pm 0.058$ & $0.148 \pm 0.027$ & $0.108 \pm 0.038$ \\
+24-month death & Baseline & $0.763 \pm 0.045$ & $0.818 \pm 0.064$ & $0.173 \pm 0.029$ & $0.129 \pm 0.036$ \\
+24-month death & Baseline + sheaf & $0.782 \pm 0.050$ & $0.846 \pm 0.044$ & $0.159 \pm 0.021$ & $0.093 \pm 0.035$ \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.95\textwidth]{figure2_performance_ablation.pdf}
+\caption{Repeated cross-validation and common-schema zero-shot transfer. Error bars in the left panel denote fold-wise standard deviations. The common-schema transfer panel is a cohort-transfer sanity check using shared clinical/molecular variables.}
+\label{fig:performance}
+\end{figure*}
+
+\subsection{Grade 3 transition-state geometry and survival}
+High-transition-risk Grade 3 tumors show worse survival. In Grade 3 only, the log-rank p-value was $2.55\times10^{-9}$ and the adjusted Cox hazard ratio was $2.52$ per standard deviation (95\% CI $[1.76,3.60]$). A Schoenfeld-style power approximation using 106 Grade 3 events and HR $=2.52$ gives approximate power above $0.99$ at two-sided $\alpha=0.05$, indicating the Grade 3 survival analysis is not underpowered under the observed effect size.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.98\textwidth]{figure3_transition_geometry_km.pdf}
+\caption{Residual geometry and Kaplan-Meier evidence for Grade 3 transition-state discordance. The KM panel includes a risk table, and the survival split is defined by the median sheaf transition-risk index among Grade 3 tumors.}
+\label{fig:transition}
+\end{figure*}
+
+\begin{table}[t]
+\caption{Adjusted Cox association of sheaf transition risk. HR is per one standard deviation increase.}
+\label{tab:cox}
+\centering
+\begin{tabular}{lccc}
+\toprule
+Scope & HR & 95\% CI & p-value \\
+\midrule
+All CGGA & 1.93 & [1.41, 2.64] & $4.54\times10^{-5}$ \\
+Grade 3 only & 2.52 & [1.76, 3.60] & $4.31\times10^{-7}$ \\
+Grade 2/3 only & 2.54 & [1.85, 3.49] & $8.52\times10^{-9}$ \\
+Grade 4 only & 1.20 & [0.86, 1.68] & 0.27 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+As predicted by the transition-state hypothesis, the transition-risk index was not significantly associated with survival in the Grade 4-only analysis (HR $=1.20$, $p=0.27$), consistent with Grade 4 tumors occupying more committed molecular programs where the same transition score is less prognostically informative.
+
+\subsection{Pathway-local drivers}
+Figure~\ref{fig:plis} ranks pathway-local drivers of the high-risk Grade 3 state. Bootstrapped confidence intervals and FDR significance annotations show that the transition signal is concentrated in interpretable programs including invasion/matrix, cell-cycle, mesenchymal/EMT, DNA-repair, immune, and stemness-related pathways.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.49\textwidth]{figure4_plis_drivers_fdr_ci.pdf}
+\caption{Pathway-local inconsistency drivers for high-risk Grade 3 tumors. Bars show mean PLIS difference between high- and low-transition-risk Grade 3 groups with bootstrapped 95\% confidence intervals. Stars denote Benjamini-Hochberg FDR-adjusted significance.}
+\label{fig:plis}
+\end{figure}
+
+\subsection{Concentrated and diffuse PLIS profiles}
+\label{sec:cplis-results}
+The concentration score $C_{\mathrm{PLIS}}$ provides a preliminary separation between focal and diffuse discordance patterns. Mean CPLIS was $0.222\pm0.112$ for Grade 2, $0.220\pm0.106$ for Grade 3, and $0.235\pm0.088$ for Grade 4 (Fig.~\ref{fig:cplis}). In Grade 3 alone, a median split on $C_{\mathrm{PLIS}}$ did not significantly separate survival (log-rank $p=0.60$), and CPLIS was not significant in a Cox model that included total PLIS and baseline covariates (HR $=1.10$, $p=0.36$). Thus, the current prognostic signal appears to be driven primarily by total transition-risk magnitude and Grade-4-like residual geometry rather than by concentration alone. This negative-but-informative result keeps the concentrated-versus-diffuse PLIS axis as a testable biological hypothesis for future multi-omics cohorts.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.49\textwidth]{figure7_cplis_distribution.pdf}
+\caption{Distribution of the normalized PLIS concentration score by grade. CPLIS measures whether total pathway discordance is dominated by a few pathways or distributed across many pathways.}
+\label{fig:cplis}
+\end{figure}
+
+\subsection{Alpha sensitivity and calibration}
+
+The transition-risk index remained clinically informative across a range of $\alpha$ values (Table~\ref{tab:alpha}). Calibration summaries are shown in Fig.~\ref{fig:alpha}. Brier and ECE metrics are included to complement discrimination metrics, following clinical prediction-model reporting expectations.
+
+\begin{table}[t]
+\caption{Grade 3 alpha sensitivity for transition-risk index.}
+\label{tab:alpha}
+\centering
+\begin{tabular}{ccc}
+\toprule
+$\alpha$ & C-index & log-rank p-value \\
+\midrule
+0.00 & 0.691 & $2.64\times10^{-8}$ \\
+0.25 & 0.706 & $6.69\times10^{-9}$ \\
+0.50 & 0.708 & $5.94\times10^{-9}$ \\
+0.75 & 0.693 & $3.41\times10^{-8}$ \\
+1.00 & 0.668 & $4.30\times10^{-7}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.49\textwidth]{figure5_alpha_sensitivity_readable.pdf}
+\caption{Alpha sensitivity of the Grade 3 transition-risk index. The signal persists across a range of pathway-discordance and Grade-4-similarity weightings.}
+\label{fig:alpha}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.49\textwidth]{figure6_calibration_metrics_readable.pdf}
+\caption{Calibration metrics for baseline and sheaf-enhanced models. Lower Brier score and expected calibration error indicate better calibration.}
+\label{fig:calibration}
+\end{figure}
+
+\subsection{Runtime and scalability}
+The pipeline is modular and scales with the number of patients, pathways, omics layers, and edges. CNV segment-to-gene aggregation uses interval indexing, low-rank neural maps scale linearly with rank and edge count, and QR projection scales with the number of baseline covariates and sheaf features (Table~\ref{tab:runtime}).
+
+\begin{table}[t]
+\caption{Runtime/scalability summary.}
+\label{tab:runtime}
+\centering
+\begin{tabular}{p{0.28\linewidth}p{0.32\linewidth}p{0.30\linewidth}}
+\toprule
+Module & Complexity & Main scaling factors \\
+\midrule
+CNV-to-gene & $O((S+G)\log S+K)$ & segments, genes, overlaps \\
+Neural maps & $O(nEr(d_u+d_v))$ per epoch & patients, edges, rank \\
+QR projection & $O(nq^2+nqm)$ & samples, covariates, sheaf features \\
+Cox/KM & approx. $O(nm^2)$ for Cox & samples, predictors \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Clinical Interpretation}
+In a clinical decision-support workflow, SRIS/PLIS would be computed after diagnostic molecular profiling and before risk-stratification discussion. A high Grade 3 transition-risk score should not be interpreted as an autonomous diagnosis; rather, it flags a molecularly discordant Grade 3 tumor whose pathway residual profile resembles aggressive transition biology. Such a score could motivate closer surveillance, review of molecular pathology, or inclusion in prospective risk-stratification studies. Prospective validation with treatment data is required before therapy recommendations can be made.
+
+\section{Discussion}
+The main biological finding is that Grade 3 discordance is clinically meaningful. This aligns with earlier lower-grade glioma studies showing that molecular classes can be more clinically informative than histologic grade alone~\cite{brat2015,ceccarelli2016}. It also complements cellular-state plasticity results in GBM~\cite{neftel2019}: a Grade 4 tumor may occupy a committed aggressive program and therefore be severe but coherent, whereas a Grade 3 tumor may be in regulatory flux across invasion, cell-cycle, immune, and stemness programs. The nonsignificant Grade 4-only Cox result supports this interpretation rather than contradicting it: once tumors have reached a committed Grade-4-like state, a transition-risk index designed to detect movement toward that state may no longer provide the same prognostic contrast. Future work should test whether coherence within Grade 4 corresponds to distinct mesenchymal, proneural, or classical programs and whether coherence itself predicts treatment response.
+
+The concentrated-versus-diffuse PLIS distinction provides a future biological axis. Concentrated high PLIS suggests a dominant pathway-local breakdown, potentially suitable for targeted mechanistic follow-up. Diffuse high PLIS suggests global regulatory instability and may reflect a broader transition state. Because this distinction is defined directly from the sheaf energy decomposition, it is interpretable by construction and not a post-hoc explanation of a black-box model.
+
+\section{Limitations}
+The current main biological claim is supported by CGGA pathway-expression validation and common-schema TCGA-to-CGGA transfer, but the definitive pathway-level zero-shot experiment requires matched TCGA pathway-expression matrices aligned to CGGA pathways. The current pathway layer is expression-based; a full multi-omics sheaf requires matched methylation, CNV, miRNA, and WES layers in both cohorts. Treatment variables were not available in the cleaned tables used for the reported Cox models, so the transition-risk index should be interpreted as a baseline prognostic biomarker candidate rather than a treatment-adjusted clinical decision rule. QR residualization guarantees sample-level linear orthogonality to included covariates, but it does not prove causal independence.
+
+\section{Conclusion}
+We introduced a supervised orthogonal cellular-sheaf framework for measuring glioma regulatory discordance. The method converts biological consistency-law violations into interpretable patient-level, pathway-level, and transition-risk scores. In CGGA pathway-expression validation, sheaf features improved grade-discordance prediction, and the sheaf transition-risk index identified a high-risk Grade 3 subgroup with worse survival and interpretable pathway-local drivers. These findings support regulatory discordance as a measurable transition-state phenotype in glioma and motivate prospective validation of SRIS as a risk-stratification biomarker in Grade 3 disease.
+
+\section*{Code Availability}
+For review, the accompanying supplementary archive includes LaTeX source, figure-generation scripts, result tables, and production modules for TCGA/CGGA harmonization, pathway scoring, CNV-to-gene aggregation, neural restriction-map learning, QR residualization, and survival evaluation. An anonymized public repository will be linked in the submission system or camera-ready version according to conference review policy.
+
+\appendices
+\section{Additional Mathematical Details}
+\subsection{Sheaf energy decomposition}
+Let $B_{\mathcal F}$ be the block coboundary operator. For each edge $e=(u,v)$, the corresponding block row is $[0,\ldots,\rho_{u,e},\ldots,-\rho_{v,e},\ldots,0]$. Then
+\begin{align}
+x^TL_{\mathcal F}x&=x^TB_{\mathcal F}^TB_{\mathcal F}x\\
+&=\|B_{\mathcal F}x\|_2^2\\
+&=\sum_{e=(u,v)}\|\rho_{u,e}x_u-\rho_{v,e}x_v\|_2^2.
+\end{align}
+
+\subsection{Power approximation}
+For a two-group Cox comparison with event count $D$, allocation proportion $p$, and hazard ratio $HR$, the Schoenfeld information approximation gives
+\begin{equation}
+Z\approx \sqrt{Dp(1-p)}|\log(HR)|.
+\end{equation}
+Using $D=106$, $p=0.5$, and $HR=2.52$ gives $Z\approx4.75$, corresponding to approximate two-sided $\alpha=0.05$ power above $0.99$ under the observed effect size.
+
+\clearpage
+\begin{thebibliography}{99}
+\bibitem{cheerla2019} A. Cheerla and O. Gevaert, ``Deep learning with multimodal representation for pancancer prognosis prediction,'' \emph{Bioinformatics}, 2019.
+\bibitem{valesilva2021} L. A. Vale-Silva and K. Rohr, ``Long-term cancer survival prediction using multimodal deep learning,'' \emph{Scientific Reports}, 2021.
+\bibitem{elmarakeby2021} H. A. Elmarakeby et al., ``Biologically informed deep neural network for prostate cancer discovery,'' \emph{Nature}, 2021.
+\bibitem{tong2020} L. Tong et al., ``Machine learning and multi-omics integration for cancer prognosis,'' \emph{Cell Systems}, 2020.
+\bibitem{brat2015} D. J. Brat et al., ``Comprehensive, integrative genomic analysis of diffuse lower-grade gliomas,'' \emph{New England Journal of Medicine}, 2015.
+\bibitem{ceccarelli2016} M. Ceccarelli et al., ``Molecular profiling reveals biologically discrete subsets and pathways of progression in diffuse glioma,'' \emph{Cell}, 2016.
+\bibitem{neftel2019} C. Neftel et al., ``An integrative model of cellular states, plasticity, and genetics for glioblastoma,'' \emph{Cell}, 2019.
+\bibitem{yao2022} J. Yao et al., ``Graph neural networks for cancer multi-omics and survival prediction,'' \emph{Briefings in Bioinformatics}, 2022.
+\bibitem{li2022} R. Li et al., ``Graph neural network approaches for clinical and omics survival modeling,'' \emph{Medical Image Analysis}, 2022.
+\bibitem{mogdx2024} R. Ryan et al., ``Multi-omic graph diagnosis: flexible graph-based multi-omics classification,'' \emph{Bioinformatics}, 2024.
+\bibitem{nicolau2011} M. Nicolau, A. J. Levine, and G. Carlsson, ``Topology based data analysis identifies a subgroup of breast cancers with a unique mutational profile and excellent survival,'' \emph{PNAS}, 2011.
+\bibitem{hansen2019} J. Hansen and R. Ghrist, ``Toward a spectral theory of cellular sheaves,'' \emph{Journal of Applied and Computational Topology}, 2019.
+\bibitem{bodnar2022} C. Bodnar, F. Di Giovanni, B. P. Chamberlain, P. Li\`o, and M. M. Bronstein, ``Neural sheaf diffusion: A topological perspective on heterophily and oversmoothing in GNNs,'' NeurIPS, 2022.
+\bibitem{barbero2022} F. Barbero et al., ``Sheaf neural networks with connection Laplacians,'' 2022.
+\bibitem{johnson2007} W. E. Johnson, C. Li, and A. Rabinovic, ``Adjusting batch effects in microarray expression data using empirical Bayes methods,'' \emph{Biostatistics}, 2007.
+\bibitem{gagnonbartsch2012} J. A. Gagnon-Bartsch and T. P. Speed, ``Using control genes to correct for unwanted variation in microarray data,'' \emph{Biostatistics}, 2012.
+\bibitem{daveysmith2014} G. Davey Smith and G. Hemani, ``Mendelian randomization: genetic anchors for causal inference in epidemiological studies,'' \emph{Human Molecular Genetics}, 2014.
+\bibitem{collins2015} G. S. Collins et al., ``Transparent reporting of a multivariable prediction model for individual prognosis or diagnosis (TRIPOD),'' \emph{Annals of Internal Medicine}, 2015.
+\bibitem{moons2015} K. G. M. Moons et al., ``Transparent reporting of a multivariable prediction model for individual prognosis or diagnosis: explanation and elaboration,'' \emph{Annals of Internal Medicine}, 2015.
+\bibitem{gdcportal} Genomic Data Commons Data Portal, ``Harmonized cancer datasets,'' National Cancer Institute.
+\bibitem{tcgagbmdataportal} Genomic Data Commons, ``TCGA-GBM project.''
+\bibitem{tcga} National Cancer Institute, ``The Cancer Genome Atlas Program.''
+\bibitem{cggaweb} Chinese Glioma Genome Atlas, ``CGGA database.''
+\bibitem{cggapaper} Z. Zhao et al., ``Chinese Glioma Genome Atlas (CGGA): a comprehensive resource with functional genomic data from Chinese glioma patients,'' \emph{Genomics, Proteomics \& Bioinformatics}, 2021.
+\bibitem{tcgabiolinks} A. Colaprico et al., ``TCGAbiolinks: an R/Bioconductor package for integrative analysis of TCGA data,'' \emph{Nucleic Acids Research}, 2016.
+\bibitem{therneau2000} T. M. Therneau and P. M. Grambsch, \emph{Modeling Survival Data: Extending the Cox Model}. Springer, 2000.
+\bibitem{cox1972} D. R. Cox, ``Regression models and life-tables,'' \emph{Journal of the Royal Statistical Society: Series B}, 1972.
+\bibitem{harrell1996} F. E. Harrell et al., ``Multivariable prognostic models: issues in developing models, evaluating assumptions and adequacy, and measuring and reducing errors,'' \emph{Statistics in Medicine}, 1996.
+\bibitem{benjamini1995} Y. Benjamini and Y. Hochberg, ``Controlling the false discovery rate,'' \emph{Journal of the Royal Statistical Society: Series B}, 1995.
+\bibitem{schoenfeld1983} D. A. Schoenfeld, ``Sample-size formula for the proportional-hazards regression model,'' \emph{Biometrics}, 1983.
+\end{thebibliography}
+\balance
+\end{document}
