@@ -5,6 +5,8 @@ import pandas as pd
 import os 
 from pathlib import Path
 from sklearn.decomposition import PCA
+from lifelines import KaplanMeierFitter 
+from lifelines.statistics import logrank_test
 
 pat = pd.read_csv("data/final_competitive_results/iteration2_patient_transition_risk_scores.csv")
 adj = pd.read_csv("data/final_competitive_results/iteration2_transition_adjusted_cox.csv")
@@ -36,7 +38,7 @@ ax1.scatter(g4['PC1'], g4['PC2'], c='red', marker='^' , alpha=0.5, label='Grade 
 #-------------ax2 divide line------------------
 
 ind = 'os_months'
-dep = 'transition_sheaf_risk_index'
+dep = 'deceased'
 
 g3 = pat.loc[pat['grade_label'] == 3]
 g3 = g3.sort_values(by=[ind], ascending=False)
@@ -46,14 +48,25 @@ median = g3[dep].median()
 low = g3[g3[dep] <= median]
 high = g3[g3[dep] > median]
 
+kmf = KaplanMeierFitter(label="low")
+kmf = kmf.fit(low[ind], low[dep])
+kmf.plot()
+
 x = list(low[ind])
 y = list(low[dep])
+min = low[dep].min()
+
 ax2.plot(x, y, label = "Low risk (" + str(round(low[dep].median()*10000)/10000) + ")", linestyle="-")
 
 x = list(high[ind])
 y = list(high[dep])
+
+if(high[dep].min() < min):
+    min = high[dep].min()
+    
 ax2.plot(x, y, label = "High risk (" + str(round(high[dep].median()*10000)/10000) + ")", linestyle="-", color = "red")
 ax2.set_title("Grade 3 Kaplan-Meier separation")
+ax2.text(1, min, "hello")
 ax2.legend()
 
 
