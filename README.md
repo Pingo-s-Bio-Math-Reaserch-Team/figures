@@ -23,10 +23,6 @@ python scripts/verify_results_from_tables.py
 python scripts/reproduce_all_figures.py
 ```
 
-## Google Colab run
-
-Open `notebooks/BIBM_Figure_Reproduction_Colab.ipynb`, mount Google Drive, set `PROJECT_DIR`, and run all cells.
-
 ## Main outputs
 
 Generated figures will appear in:
@@ -38,8 +34,7 @@ figures/
 Each figure is saved as:
 
 ```text
-figure_name.pdf
-figure_name.png
+fig#.png
 ```
 
 ## Key integrity file
