@@ -68,7 +68,8 @@ kmfh = kmfh.fit(high[ind], high[dep])
 kmfh.plot()
 
 ax2.set_title("Grade 3 Kaplan-Meier separation")
-ax2.text(1, 0, "hello")
+ax2.text(1, 0, "og-rank p=")
+print(logrank_test(high[ind], low[ind], high[dep], low[dep]))
 ax2.legend()
 
 
