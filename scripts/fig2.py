@@ -182,6 +182,6 @@ ax2.set_xticks(x + width, tasks)
 ax2.set_ylim(0, 1.2)
 
 plt.tight_layout()
-plt.savefig('fig2.png', dpi=600, bbox_inches='tight')
+plt.savefig('figures/fig2.png', dpi=600, bbox_inches='tight')
 plt.show()
   

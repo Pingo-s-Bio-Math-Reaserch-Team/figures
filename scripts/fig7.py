@@ -34,5 +34,5 @@ plt.plot(means_x, means_y, color='C0', linestyle='--', linewidth=2)
 
 plt.legend([box['means'][0]], ['Mean'])
 plt.title('Concentrated PLIS by grade', fontsize=16)
-plt.savefig('fig7.png', dpi=600, bbox_inches='tight')
+plt.savefig('figures/fig7.png', dpi=600, bbox_inches='tight')
 plt.show()

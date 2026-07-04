@@ -50,6 +50,5 @@ ax.text(0.5, 0.9, r'Low-rank neural restriction map: $\rho_e^\theta$(x) = $A_e$x
 
 
 plt.tight_layout()
-plt.savefig('fig1.png', dpi=600, bbox_inches='tight')
-
+plt.savefig('figures/fig1.png', dpi=600, bbox_inches='tight')
 plt.show()

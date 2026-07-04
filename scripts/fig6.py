@@ -38,5 +38,5 @@ ax2.set_title("Expected Calibration Error")
 ax2.grid(linestyle="--")
 ax2.set_ylim(0, .16)
 
-plt.savefig('fig6.png', dpi=600, bbox_inches='tight')
+plt.savefig('figures/fig6.png', dpi=600, bbox_inches='tight')
 plt.show()
