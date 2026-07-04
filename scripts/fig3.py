@@ -78,7 +78,7 @@ indexOfE = pval.find("e")
 
 pval = pval[indexOfE:]
 
-pval = str(num) + "-" + pval
+pval = str(num) + pval
 ax2.text(1, 0, "og-rank p=" + pval)
 
 ax2.legend()
