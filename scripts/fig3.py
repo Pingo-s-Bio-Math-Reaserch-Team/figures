@@ -52,11 +52,8 @@ g3 = g3.sort_values(by=[ind], ascending=False)
 
 median = g3[dep].median()
 
-
 low = g3[g3[dep] <= median]
 high = g3[g3[dep] > median]
-
-
 
 x = list(low[ind])
 y = list(low[dep])
@@ -65,9 +62,10 @@ ax2.plot(x, y, label = "Low risk (" + str(round(low[dep].median()*10000)/10000) 
 x = list(high[ind])
 y = list(high[dep])
 ax2.plot(x, y, label = "High risk (" + str(round(high[dep].median()*10000)/10000) + ")", linestyle="-", color = "red")
-
+ax2.set_title("Grade 3 Kaplan-Meier separation")
 ax2.legend()
 
 
 plt.tight_layout()
+#plt.savefig('fig3.png', dpi=300, bbox_inches='tight')
 plt.show()
