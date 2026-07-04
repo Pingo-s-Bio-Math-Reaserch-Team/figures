@@ -83,7 +83,7 @@ ax2.text(1, 0, "og-rank p=" + pval)
 
 ax2.legend()
 ax2.set_ylabel("Survival probability")
-
+ax2.set_xlabel("Timeline (months)")
 plt.tight_layout()
 plt.savefig('fig3.png', dpi=300, bbox_inches='tight')
 plt.show()
