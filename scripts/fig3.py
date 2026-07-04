@@ -28,10 +28,19 @@ g3_low = pat[(pat['grade'] == 3) & (pat['transition_sheaf_risk_index'] < g3med)]
 g3_high = pat[(pat['grade'] == 3) & (pat['transition_sheaf_risk_index'] >= g3med)]
 g4 = pat[pat['grade'] == 4]
 
-ax1.scatter(other['PC1'], other['PC2'], c='lightblue', alpha=0.5, label='Other', s= 75)
-ax1.scatter(g3_low['PC1'], g3_low['PC2'], c='orange', alpha=0.5, label='Grade 3 low', s= 75)
-ax1.scatter(g3_high['PC1'], g3_high['PC2'], c='green', alpha=0.5, label='Grade 3 high', s= 75)
-ax1.scatter(g4['PC1'], g4['PC2'], c='red', marker='^' , alpha=0.5, label='Grade 4', s= 75)
+ax1.scatter(other['PC1'], other['PC2'], c='lightblue', alpha=0.5, label='Other', s= 50)
+ax1.scatter(g3_low['PC1'], g3_low['PC2'], c='orange', alpha=0.5, label='Grade 3 low', s= 50)
+ax1.scatter(g3_high['PC1'], g3_high['PC2'], c='green', alpha=0.5, label='Grade 3 high', s= 50)
+ax1.scatter(g4['PC1'], g4['PC2'], c='red', marker='^' , alpha=0.5, label='Grade 4', s= 50) #DELETE THIS LINE IF YOU DONT WANT GRADE 4 POINTS
+ax1.scatter(g4['PC1'].mean(), g4['PC2'].mean(), c='darkorchid', marker='*', label='Grade 4 centroid', s= 200)
+
+leg = ax1.legend(fontsize = 8, loc='upper left')
+
+ax1.set_xlabel('PC1 of pathway residual space')
+ax1.set_ylabel('PC2')
+ax1.set_title('Residual geometry')
+
+print(pca.explained_variance_ratio_)
 
 #-------------ax2 divide line------------------
 
@@ -61,5 +70,4 @@ ax2.legend()
 
 
 plt.tight_layout()
-plt.savefig('fig3.png', dpi=300, bbox_inches='tight')
 plt.show()
