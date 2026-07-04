@@ -61,5 +61,5 @@ ax2.legend()
 
 
 plt.tight_layout()
-plt.savefig('fig3.png', dpi=300, bbox_inches='tight')
+#plt.savefig('fig3.png', dpi=300, bbox_inches='tight')
 plt.show()
