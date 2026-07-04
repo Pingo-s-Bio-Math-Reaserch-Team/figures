@@ -23,5 +23,5 @@ ax.set_xlabel("Mean PLIS difference (high risk G3 - low-risk G3)")
 ax.set_title("Pathway-local drivers")
 
 plt.savefig('fig4.png', dpi=300, bbox_inches='tight')
-plt.tight_layout();
+plt.tight_layout()
 plt.show()
