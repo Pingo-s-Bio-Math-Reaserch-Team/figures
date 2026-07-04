@@ -68,10 +68,21 @@ kmfh = kmfh.fit(high[ind], high[dep])
 kmfh.plot()
 
 ax2.set_title("Grade 3 Kaplan-Meier separation")
-ax2.text(1, 0, "og-rank p=")
-print(logrank_test(high[ind], low[ind], high[dep], low[dep]))
-ax2.legend()
+pval = str(logrank_test(high[ind], low[ind], high[dep], low[dep]).p_value)
+num = pval[0:5]
+num = float(num)
+num *= 100
+num = round(num)
+num /= 100
+indexOfE = pval.find("e")
 
+pval = pval[indexOfE:]
+
+pval = str(num) + "-" + pval
+ax2.text(1, 0, "og-rank p=" + pval)
+
+ax2.legend()
+ax2.set_ylabel("Survival probability")
 
 plt.tight_layout()
 #plt.savefig('fig3.png', dpi=300, bbox_inches='tight')
