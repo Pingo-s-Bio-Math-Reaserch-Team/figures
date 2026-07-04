@@ -36,6 +36,7 @@ ax2.legend(loc="best")
 ax2.set_xticks([ind-bar_width/2 for ind in index],labels_ece)
 ax2.set_title("Expected Calibration Error")
 ax2.grid(linestyle="--")
+ax2.set_ylim(0, .16)
 
 plt.savefig('fig6.png', dpi=300, bbox_inches='tight')
 plt.show()
