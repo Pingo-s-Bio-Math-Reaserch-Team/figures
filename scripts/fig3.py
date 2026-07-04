@@ -19,15 +19,20 @@ fig.set_size_inches(10, 4)
 
 #---- ax 2 divide line ;---;
 
+g3 = pat[pat['grade_label'] == '3']
+median = g3['transition_sheaf_risk_index'].median()
+
+low = g3[g3['transition_sheaf_risk_index'] <= median]
+high = g3[g3['transition_sheaf_risk_index'] > median]
+
 # create data
 x = [1,2,3,4,5]
-y = [3,3,3,3,3]
+y = [3,4,6,7,8]
 
 # plot lines
 ax2.plot(x, y, label = "line 1", linestyle="-")
 ax2.plot(y, x, label = "line 2", linestyle="--")
-ax2.plot(x, np.sin(x), label = "curve 1", linestyle="-.")
-ax2.plot(x, np.cos(x), label = "curve 2", linestyle=":")
+
 ax2.legend()
 
 
