@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import os 
 from pathlib import Path
-
+import math
 
 df = pd.read_csv("data\source_tables\performance_mean_sd_for_latex.csv")
 
@@ -60,25 +60,39 @@ fig.set_size_inches(10, 4)
 baseStrError = list()
 sheafStrError = list()
 
-for bserr in baseErrorList:
-    baseStrError.append('±' + str(bserr))
 
-for sserr in errorList:
-    sheafStrError.append('±' + str(sserr))
     
 iter = 0
+
+
+for i in range(len(baseValList)):
+    num = sheafValList[i] - baseValList[i]
+    num *= 10000
+    num = round(num)
+    num /= 10000
+    if(num > 0):
+        strer = str(num)
+        baseStrError.append("+" + strer[0:5] )
+
+    
+    else:
+        strer = str(num)
+        baseStrError.append(strer[0:6])
+        
+        
 for attribute, measurement in data.items():
     offset = width * multiplier
     if(iter == 0):
         rects = ax1.bar(x + offset, measurement, width, label=attribute, yerr = baseErrorList, capsize = 5)
-        ax1.bar_label(container=rects, padding=3, labels=baseStrError)
+
     else:
         rects = ax1.bar(x + offset, measurement, width, label=attribute, yerr = errorList, capsize = 5)
-        ax1.bar_label(container=rects, padding=3, labels=sheafStrError)
+       
     multiplier += 1
     iter+=1
     
-
+for i in range(len(errorList)):
+    ax1.text((width*.5)-.1 + (width + offset*1.5) * i, 1, baseStrError[i])
 
     
 
@@ -86,7 +100,7 @@ ax1.set_ylabel('Balanced accuracy')
 ax1.set_title('Balanced accuracy')
 ax1.set_xticks(x + width, tasks)
 ax1.legend(loc='upper left', ncols=3)
-ax1.set_ylim(0, 1)
+ax1.set_ylim(0, 1.2)
 
 
 baseline = df.loc[df['Model'] == "Baseline"]
@@ -130,36 +144,44 @@ multiplier = 0
 
 
 baseStrError = list()
-sheafStrError = list()
 
-for bserr in baseErrorList:
-    baseStrError.append('±' + str(bserr))
 
-for sserr in errorList:
-    sheafStrError.append('±' + str(sserr))
+for i in range(len(baseValList)):
+    num = sheafValList[i] - baseValList[i]
+    num *= 10000
+    num = round(num)
+    num /= 10000
+    num = sheafValList[i] - baseValList[i]
+    if(num > 0):
+        strer = str(num)
+        baseStrError.append("+" + strer[0:5] )
+    else:
+        strer = str(num)
+        baseStrError.append(strer[0:6])
 
-iter = 0
+
+
 for attribute, measurement in data.items():
     offset = width * multiplier
     if(iter == 0):
         rects = ax2.bar(x + offset, measurement, width, label=attribute, yerr = baseErrorList, capsize = 5)
-        ax2.bar_label(container=rects, padding=3, labels=baseStrError)
     else:
         rects = ax2.bar(x + offset, measurement, width, label=attribute, yerr = errorList, capsize = 5)
-        ax2.bar_label(container=rects, padding=3, labels=sheafStrError)
-        
     
     multiplier += 1
-    iter+=1
     
 
-
+for i in range(len(errorList)):
+    ax2.text((width*.5)-.1 + (width + offset*1.5) * i, 1, baseStrError[i])
+    
     
 ax2.set_ylabel('AUROC')
 ax2.set_title('AUROC')
 ax2.set_xticks(x + width, tasks)
 
-ax2.set_ylim(0, 1)
+ax2.set_ylim(0, 1.2)
 
+plt.tight_layout()
+plt.savefig('fig2.png', dpi=300, bbox_inches='tight')
 plt.show()
   
