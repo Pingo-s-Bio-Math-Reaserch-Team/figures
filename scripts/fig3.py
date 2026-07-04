@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 
 
-df = pd.read_csv("iteration2_patient_transition_risk_scores.csv")
+df = pd.read_csv("data/final_competitive_results/iteration2_patient_transition_risk_scores.csv")
 
 fig, (ax1, ax2) = plt.subplots(1, 2, layout='constrained')
 fig.set_size_inches(10, 4)
