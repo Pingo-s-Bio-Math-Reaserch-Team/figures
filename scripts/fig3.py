@@ -19,19 +19,27 @@ fig.set_size_inches(10, 4)
 
 #---- ax 2 divide line ;---;
 
-g3 = pat[pat['grade_label'] == '3']
-median = g3['transition_sheaf_risk_index'].median()
+ind = 'os_months'
+dep = 'transition_sheaf_risk_index'
 
-low = g3[g3['transition_sheaf_risk_index'] <= median]
-high = g3[g3['transition_sheaf_risk_index'] > median]
+g3 = pat.loc[pat['grade_label'] == 3]
+g3 = g3.sort_values(by=[ind], ascending=False)
 
-# create data
-x = [1,2,3,4,5]
-y = [3,4,6,7,8]
+median = g3[dep].median()
 
-# plot lines
-ax2.plot(x, y, label = "line 1", linestyle="-")
-ax2.plot(y, x, label = "line 2", linestyle="--")
+
+low = g3[g3[dep] <= median]
+high = g3[g3[dep] > median]
+
+
+
+x = list(low[ind])
+y = list(low[dep])
+ax2.plot(x, y, label = "Low risk (" + str(round(low[dep].median()*10000)/10000) + ")", linestyle="-")
+
+x = list(high[ind])
+y = list(high[dep])
+ax2.plot(x, y, label = "High risk (" + str(round(high[dep].median()*10000)/10000) + ")", linestyle="-", color = "red")
 
 ax2.legend()
 
