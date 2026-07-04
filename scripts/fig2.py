@@ -51,21 +51,30 @@ data = {
 
 
 x = np.arange(len(tasks)) 
-width = 0.25  
+width = 0.4 
 multiplier = 0
 
 fig, (ax1, ax2) = plt.subplots(1, 2, layout='constrained')
 fig.set_size_inches(10, 4)
 
+baseStrError = list()
+sheafStrError = list()
 
+for bserr in baseErrorList:
+    baseStrError.append('±' + str(bserr))
+
+for sserr in errorList:
+    sheafStrError.append('±' + str(sserr))
+    
 iter = 0
 for attribute, measurement in data.items():
     offset = width * multiplier
     if(iter == 0):
         rects = ax1.bar(x + offset, measurement, width, label=attribute, yerr = baseErrorList, capsize = 5)
+        ax1.bar_label(container=rects, padding=3, labels=baseStrError)
     else:
         rects = ax1.bar(x + offset, measurement, width, label=attribute, yerr = errorList, capsize = 5)
-    ax1.bar_label(rects, padding=3)
+        ax1.bar_label(container=rects, padding=3, labels=sheafStrError)
     multiplier += 1
     iter+=1
     
@@ -116,21 +125,28 @@ data = {
 
 
 x = np.arange(len(tasks))  
-width = 0.25  
+width = 0.4  
 multiplier = 0
 
 
+baseStrError = list()
+sheafStrError = list()
 
+for bserr in baseErrorList:
+    baseStrError.append('±' + str(bserr))
+
+for sserr in errorList:
+    sheafStrError.append('±' + str(sserr))
 
 iter = 0
 for attribute, measurement in data.items():
     offset = width * multiplier
     if(iter == 0):
         rects = ax2.bar(x + offset, measurement, width, label=attribute, yerr = baseErrorList, capsize = 5)
-        ax2.bar_label(container=rects, padding=3, labels=baseErrorList)
+        ax2.bar_label(container=rects, padding=3, labels=baseStrError)
     else:
         rects = ax2.bar(x + offset, measurement, width, label=attribute, yerr = errorList, capsize = 5)
-        ax2.bar_label(container=rects, padding=3, labels=errorList)
+        ax2.bar_label(container=rects, padding=3, labels=sheafStrError)
         
     
     multiplier += 1
