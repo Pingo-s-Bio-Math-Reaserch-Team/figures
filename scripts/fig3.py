@@ -13,8 +13,27 @@ km = pd.read_csv("data/final_competitive_results/iteration2_transition_km_logran
 fig, (ax1, ax2) = plt.subplots(1, 2, layout='constrained')
 fig.set_size_inches(10, 4)
 
+#--------------ax1 begins here----------------
 
+select_columns = [column for column in pat.columns if column.startswith('pathway_')]
+pca = PCA(n_components=2)
+coords = pca.fit_transform(pat[select_columns])
 
+pat['PC1'] = coords[:, 0]
+pat['PC2'] = coords[:, 1]
+
+g3med = pat.loc[pat['grade'] == 3, 'transition_sheaf_risk_index'].median()
+other = pat[pat['grade'] != 3]
+g3_low = pat[(pat['grade'] == 3) & (pat['transition_sheaf_risk_index'] < g3med)]
+g3_high = pat[(pat['grade'] == 3) & (pat['transition_sheaf_risk_index'] >= g3med)]
+g4 = pat[pat['grade'] == 4]
+
+ax1.scatter(other['PC1'], other['PC2'], c='lightblue', alpha=0.5, label='Other', s= 75)
+ax1.scatter(g3_low['PC1'], g3_low['PC2'], c='orange', alpha=0.5, label='Grade 3 low', s= 75)
+ax1.scatter(g3_high['PC1'], g3_high['PC2'], c='green', alpha=0.5, label='Grade 3 high', s= 75)
+ax1.scatter(g4['PC1'], g4['PC2'], c='red', marker='^' , alpha=0.5, label='Grade 4', s= 75)
+
+#-------------ax2 divide line------------------
 
 plt.tight_layout()
 plt.savefig('fig3.png', dpi=300, bbox_inches='tight')
