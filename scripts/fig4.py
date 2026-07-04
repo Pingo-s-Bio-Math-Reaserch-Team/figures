@@ -11,6 +11,16 @@ df = df.sort_values("delta_plis", ascending=True)
 
 pathways = df["pathway"]
 delta_plis = df["delta_plis"]
+q_values = df["q_value"]
+
+def asterisk(q):
+    if q<0.001:
+        return '***'
+    if q<0.01:
+        return '**'
+    if q<0.05:
+        return '*'
+    return 'ns'
 
 xerr = np.vstack([df["delta_plis"] - df["ci_low"], df["ci_high"] - df["delta_plis"]])
 
@@ -19,9 +29,13 @@ fig, ax = plt.subplots(figsize=(7, 5))
 ax.barh(pathways, delta_plis, xerr=xerr, align="center", capsize=4)
 ax.set_xlim(left=0)
 
+for i in range(len(pathways)):
+    ax.text(df["ci_high"].iloc[i]+0.1, pathways.iloc[i], asterisk(q_values.iloc[i]), va='center', fontsize=12)
+
 ax.set_xlabel("Mean PLIS difference (high risk G3 - low-risk G3)")
 ax.set_title("Pathway-local drivers")
+ax.spines[['top', 'right']].set_visible(False)
 
-plt.savefig('fig4.png', dpi=300, bbox_inches='tight')
 plt.tight_layout()
+plt.savefig('fig4.png', dpi=300, bbox_inches='tight')
 plt.show()
