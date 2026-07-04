@@ -16,6 +16,21 @@ fig.set_size_inches(10, 4)
 
 
 
+
+#---- ax 2 divide line ;---;
+
+# create data
+x = [1,2,3,4,5]
+y = [3,3,3,3,3]
+
+# plot lines
+ax2.plot(x, y, label = "line 1", linestyle="-")
+ax2.plot(y, x, label = "line 2", linestyle="--")
+ax2.plot(x, np.sin(x), label = "curve 1", linestyle="-.")
+ax2.plot(x, np.cos(x), label = "curve 2", linestyle=":")
+ax2.legend()
+
+
 plt.tight_layout()
 plt.savefig('fig3.png', dpi=300, bbox_inches='tight')
 plt.show()
