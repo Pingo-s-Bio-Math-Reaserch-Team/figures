@@ -35,6 +35,31 @@ ax1.scatter(g4['PC1'], g4['PC2'], c='red', marker='^' , alpha=0.5, label='Grade 
 
 #-------------ax2 divide line------------------
 
+ind = 'os_months'
+dep = 'transition_sheaf_risk_index'
+
+g3 = pat.loc[pat['grade_label'] == 3]
+g3 = g3.sort_values(by=[ind], ascending=False)
+
+median = g3[dep].median()
+
+
+low = g3[g3[dep] <= median]
+high = g3[g3[dep] > median]
+
+
+
+x = list(low[ind])
+y = list(low[dep])
+ax2.plot(x, y, label = "Low risk (" + str(round(low[dep].median()*10000)/10000) + ")", linestyle="-")
+
+x = list(high[ind])
+y = list(high[dep])
+ax2.plot(x, y, label = "High risk (" + str(round(high[dep].median()*10000)/10000) + ")", linestyle="-", color = "red")
+
+ax2.legend()
+
+
 plt.tight_layout()
 plt.savefig('fig3.png', dpi=300, bbox_inches='tight')
 plt.show()
