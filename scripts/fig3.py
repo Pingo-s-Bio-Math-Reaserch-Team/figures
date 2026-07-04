@@ -85,5 +85,5 @@ ax2.legend()
 ax2.set_ylabel("Survival probability")
 
 plt.tight_layout()
-#plt.savefig('fig3.png', dpi=300, bbox_inches='tight')
+plt.savefig('fig3.png', dpi=300, bbox_inches='tight')
 plt.show()
