@@ -15,12 +15,12 @@ grades = sorted(df[grade_col].dropna().unique())
 for grade in grades:
     grade_df = df[df[grade_col] == grade]
     data.append(grade_df[cplis_col].dropna().values)
-    
+
 plt.ylabel("CPLIS", fontsize=14)
-plt.boxplot(data, sym='', labels=["Grade 2", "Grade 3", "Grade 4"], showmeans=True, meanprops={"marker": "o", "markerfacecolor": "C0", "markersize": 10})
+plt.boxplot(data, sym='', tick_labels=["Grade 2", "Grade 3", "Grade 4"], showmeans=True, meanprops={"marker": "o", "markerfacecolor": "C0", "markersize": 10})
 plt.tick_params(axis='both', labelsize=14) 
 
-box = plt.boxplot(data, sym='', labels=["Grade 2", "Grade 3", "Grade 4"], showmeans=True, meanprops={"marker": "o", "markerfacecolor": "C0", "markersize": 10, "markeredgecolor": "C0"})
+box = plt.boxplot(data, sym='', tick_labels=["Grade 2", "Grade 3", "Grade 4"], showmeans=True, meanprops={"marker": "o", "markerfacecolor": "C0", "markersize": 10, "markeredgecolor": "C0"})
 
 means_x = []
 means_y = []
