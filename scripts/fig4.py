@@ -37,5 +37,5 @@ ax.set_title("Pathway-local drivers")
 ax.spines[['top', 'right']].set_visible(False)
 
 plt.tight_layout()
-plt.savefig('fig4.png', dpi=300, bbox_inches='tight')
+plt.savefig('fig4.png', dpi=600, bbox_inches='tight')
 plt.show()

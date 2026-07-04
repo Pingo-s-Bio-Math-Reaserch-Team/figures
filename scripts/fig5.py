@@ -28,5 +28,5 @@ lines2, labels2 = ax2.get_legend_handles_labels()
 ax1.legend(lines1 + lines2, labels1 + labels2, loc=0)
 ax1.set_title(r"Transition-risk robustness across $\alpha$", fontsize=14)
 
-plt.savefig('fig5.png', dpi=300, bbox_inches='tight')
+plt.savefig('fig5.png', dpi=600, bbox_inches='tight')
 plt.show()
