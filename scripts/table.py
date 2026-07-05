@@ -39,5 +39,6 @@ figtable = ax.table(
     cellLoc="center",
     loc="center"
 )
+plt.savefig('figures/tableForFig3.png', dpi=600, bbox_inches='tight')
 
 plt.show()
